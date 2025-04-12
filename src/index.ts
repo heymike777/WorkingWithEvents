@@ -12,6 +12,7 @@ import { PolygonManager } from './chains/PolygonManager';
 import { MigrationManager } from './services/managers/MigrationManager';
 import minimist from 'minimist';
 import { FeeEventsManager } from './services/managers/FeeEventsManager';
+import { eventsRouter } from './routes/v1/Events';
 
 const corsOptions: CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -25,7 +26,7 @@ app.use(json());
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-// app.use(authRouter);
+app.use(eventsRouter);
 
 app.all('*', async () => {
     throw new NotFoundError();

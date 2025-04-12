@@ -23,3 +23,8 @@ For example
 ```bash
   npm run start -- --from=70196523 --to=70196525
 ```
+
+API to fetch events
+```bash
+    http://localhost:3000/api/v1/events?integrator={integrator}&page=1&pageSize=20
+```

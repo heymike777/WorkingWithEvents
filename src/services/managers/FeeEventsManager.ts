@@ -123,10 +123,8 @@ export class FeeEventsManager {
                 }
                 else {
                     console.log(`No manager for chainId ${chainId}`);
-                }
-                
+                }   
             }
-
         }
 
         return blocks;
