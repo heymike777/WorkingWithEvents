@@ -1,8 +1,9 @@
-import { getModelForClass, index, prop } from "@typegoose/typegoose";
+import { getModelForClass, index, modelOptions, prop } from "@typegoose/typegoose";
 import { ChainId } from "../chains/Types";
 
 @index({ chainId: 1, blockNumber: 1 })
-@index({ transactionHash: 1, blockNumber: 1 }, { unique: true }) //TBD: let's consider that we could have only one event per transaction. 
+@index({ chainId: 1, transactionHash: 1, blockNumber: 1 }, { unique: true }) //TBD: let's consider that we could have only one event per transaction. 
+@modelOptions({ schemaOptions: { collection: 'fee-events' } })
 class FeeEventSchema {
     @prop()
     public blockNumber!: number;

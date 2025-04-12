@@ -11,6 +11,7 @@ import { errorHandler } from './middlewares/ErrorHandler';
 import { PolygonManager } from './chains/PolygonManager';
 import { MigrationManager } from './services/managers/MigrationManager';
 import minimist from 'minimist';
+import { FeeEventsManager } from './services/managers/FeeEventsManager';
 
 const corsOptions: CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -60,9 +61,10 @@ const onExpressStarted = async () => {
             fromBlock = polygon.kMinBlock;
             console.error(`fromBlock is less than the minimum block number. Setting fromBlock to ${polygon.kMinBlock}`);
         }
-        const events = await polygon.loadFeeCollectorEvents(fromBlock, toBlock);
-        const parsedEvents = polygon.parseFeeCollectorEvents(events);
-        console.log('Parsed events', parsedEvents);
+
+        // Load blocks from the database or on-chain if not found
+        const blocks = await FeeEventsManager.loadBlocks(polygon.chainId, fromBlock, toBlock);
+        console.log('Blocks:', blocks);
     }
 
     // await MigrationManager.syncIndexes();
