@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import './services/helpers/Secrets'
 import { NotFoundError } from './errors/NotFoundError';
 import { errorHandler } from './middlewares/ErrorHandler';
+import { PolygonManager } from './chains/PolygonManager';
 
 const corsOptions: CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -30,8 +31,9 @@ app.all('*', async () => {
 app.use(errorHandler);
 
 const start = async () => {
+    console.log('MongoDB - connecting');
     await mongoose.connect(process.env.MONGODB_CONNECTION_URL!);
-    console.log('MongoDB connected');
+    console.log('MongoDB - connected');
 
     const port = process.env.PORT;
     app.listen(port, () => {
@@ -43,7 +45,12 @@ const start = async () => {
  * Function to be called when the Express server has started.
  */
 const onExpressStarted = async () => {
-    console.log('Express started');
+    console.log('Express - started');
+
+    const polygon = new PolygonManager();
+    const events = await polygon.loadFeeCollectorEvents(70196523, 70196525);
+    const parsedEvents = polygon.parseFeeCollectorEvents(events);
+    console.log('Parsed events', parsedEvents);
 }
 
 start();

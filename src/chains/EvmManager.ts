@@ -4,13 +4,15 @@ import { BlockTag } from '@ethersproject/abstract-provider';
 import { ChainId } from './Types';
 
 export interface ParsedFeeCollectedEvents {
+    blockNumber: number; // block ID
+    transactionHash: string; // tx signature
     token: string; // the address of the token that was collected
     integrator: string; // the integrator that triggered the fee collection
     integratorFee: BigNumber; // the share collector for the integrator
     lifiFee: BigNumber; // the share collected for lifi
 }
 
-export class EvmManager{
+export class EvmManager {
 
     chainId: ChainId;
     contractAddress: string;
@@ -50,8 +52,10 @@ export class EvmManager{
     
         return events.map(event => {
             const parsedEvent = feeCollectorContract.interface.parseLog(event);
-        
+
             const feesCollected: ParsedFeeCollectedEvents = {
+                blockNumber: event.blockNumber,
+                transactionHash: event.transactionHash,
                 token: parsedEvent.args[0],
                 integrator: parsedEvent.args[1],
                 integratorFee: BigNumber.from(parsedEvent.args[2]),
