@@ -9,6 +9,8 @@ import './services/helpers/Secrets'
 import { NotFoundError } from './errors/NotFoundError';
 import { errorHandler } from './middlewares/ErrorHandler';
 import { PolygonManager } from './chains/PolygonManager';
+import { MigrationManager } from './services/managers/MigrationManager';
+import minimist from 'minimist';
 
 const corsOptions: CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -47,10 +49,23 @@ const start = async () => {
 const onExpressStarted = async () => {
     console.log('Express - started');
 
-    const polygon = new PolygonManager();
-    const events = await polygon.loadFeeCollectorEvents(70196523, 70196525);
-    const parsedEvents = polygon.parseFeeCollectorEvents(events);
-    console.log('Parsed events', parsedEvents);
+    const args = minimist(process.argv.slice(2));
+    if (args['from'] && args['to']) {
+        let fromBlock = parseInt(args['from']);
+        const toBlock = parseInt(args['to']);
+        console.log('fromBlock', fromBlock, 'toBlock', toBlock);
+
+        const polygon = new PolygonManager();
+        if (fromBlock < polygon.kMinBlock) {
+            fromBlock = polygon.kMinBlock;
+            console.error(`fromBlock is less than the minimum block number. Setting fromBlock to ${polygon.kMinBlock}`);
+        }
+        const events = await polygon.loadFeeCollectorEvents(fromBlock, toBlock);
+        const parsedEvents = polygon.parseFeeCollectorEvents(events);
+        console.log('Parsed events', parsedEvents);
+    }
+
+    // await MigrationManager.syncIndexes();
 }
 
 start();
