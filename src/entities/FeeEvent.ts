@@ -34,5 +34,3 @@ class FeeEventSchema {
 }
   
 export const FeeEvent = getModelForClass(FeeEventSchema);
-  
-// let document = await FeeEvent.create({ name: 'Kitty' });
