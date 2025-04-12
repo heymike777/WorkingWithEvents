@@ -2,6 +2,14 @@ import express from 'express';
 import { CustomError } from '../errors/CustomError';
 import { ErrorResponse } from '../responses/ErrorResponse';
 
+/**
+ * Middleware to handle errors in the application.
+ * It captures errors thrown in the application and sends a structured response.
+ * @param err
+ * @param req
+ * @param res
+ * @param next
+ */
 export const errorHandler = (
     err: Error, 
     req: express.Request, 

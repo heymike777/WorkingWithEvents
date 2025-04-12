@@ -39,6 +39,9 @@ const start = async () => {
     });
 }
 
+/**
+ * Function to be called when the Express server has started.
+ */
 const onExpressStarted = async () => {
     console.log('Express started');
 }
