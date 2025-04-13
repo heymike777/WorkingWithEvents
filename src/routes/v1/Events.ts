@@ -14,7 +14,7 @@ const router = express.Router();
  * @returns {object} - An object containing the events.
  */
 router.get(
-    '/api/v1/events',
+    '/',
     [
         query('pageSize').optional().isInt({ min: 1, max: 100 }).withMessage('pageSize must be a number between 1 and 100'),
         query('page').optional().isInt({ min: 1 }).withMessage('page must be a number greater than 0'),
@@ -27,7 +27,6 @@ router.get(
         const page = req.query.page ? parseInt('' + req.query.page) : 1;
         const skip = pageSize * (page - 1);
         const limit = pageSize;
-        console.log('pageSize', pageSize, 'page', page, 'skip', skip, 'limit', limit);
 
         const events = await FeeEvent.find({
             integrator: integrator
