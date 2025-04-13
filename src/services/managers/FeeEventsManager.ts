@@ -1,7 +1,7 @@
 import { ParsedFeeCollectedEvents } from "../../chains/EvmManager";
 import { PolygonManager } from "../../chains/PolygonManager";
 import { ChainId } from "../../chains/Types";
-import { FeeBlock } from "../../entities/FeeBlock";
+import { FeeBlock, IFeeBlock } from "../../entities/FeeBlock";
 import { FeeEvent } from "../../entities/FeeEvent";
 
 /**
@@ -63,7 +63,7 @@ export class FeeEventsManager {
      * @param chainId The chain ID.
      * @param blockNumber The block number.
      */
-    static async getBlock(chainId: ChainId, blockNumber: number) {
+    static async getBlock(chainId: ChainId, blockNumber: number): Promise<IFeeBlock | undefined> {
         const block = await FeeBlock.findOne({ chainId, blockNumber });
         return block || undefined;
     }
@@ -74,7 +74,7 @@ export class FeeEventsManager {
      * @param blockNumber The block number.
      * @param eventsCount The number of events in the block.
      */
-    static async createBlock(chainId: ChainId, blockNumber: number, eventsCount: number) {
+    static async createBlock(chainId: ChainId, blockNumber: number, eventsCount: number): Promise<IFeeBlock | undefined> {
         try {
             const block = await FeeBlock.create({
                 blockNumber,
@@ -96,9 +96,10 @@ export class FeeEventsManager {
      * @param chainId The chain ID.
      * @param fromBlock The starting block number.
      * @param toBlock The ending block number.
+     * @return An array of fee blocks.
      */
-    static async loadBlocks(chainId: ChainId, fromBlock: number, toBlock: number) {
-        const blocks = await FeeBlock.find({
+    static async loadBlocks(chainId: ChainId, fromBlock: number, toBlock: number): Promise<IFeeBlock[]> {
+        const blocks: IFeeBlock[] = await FeeBlock.find({
             chainId,
             blockNumber: { $gte: fromBlock, $lte: toBlock },
         });
@@ -111,7 +112,7 @@ export class FeeEventsManager {
             }
         }
         if (nonExistentBlocks.length > 0) {
-            console.log(`Blocks not found in DB: ${nonExistentBlocks}`);
+            console.log(`Blocks not found in DB: ${nonExistentBlocks}. Fetching on-chain...`);
 
             for (const blockNumber of nonExistentBlocks) {
                 if (chainId == ChainId.POLYGON){
@@ -119,7 +120,8 @@ export class FeeEventsManager {
                     const events = await polygonManager.loadFeeCollectorEvents(blockNumber, blockNumber);
                     const parsedEvents = polygonManager.parseFeeCollectorEvents(events);
                     await FeeEventsManager.createFromEvents(chainId, parsedEvents);
-                    await FeeEventsManager.createBlock(chainId, blockNumber, parsedEvents.length);
+                    const block = await FeeEventsManager.createBlock(chainId, blockNumber, parsedEvents.length);
+                    if (block) { blocks.push(block); }
                 }
                 else {
                     console.log(`No manager for chainId ${chainId}`);

@@ -12,9 +12,7 @@ class FeeBlockSchema {
 
     @prop()
     public chainId!: ChainId;
-
-    @prop()
-    private createdAt!: Date;
 }
   
 export const FeeBlock = getModelForClass(FeeBlockSchema);
+export type IFeeBlock = FeeBlockSchema;

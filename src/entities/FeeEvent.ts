@@ -26,13 +26,7 @@ class FeeEventSchema {
 
     @prop()
     public lifiFee!: string;
-
-    @prop()
-    private createdAt!: Date;
-
-    // public static async findBySpecies(this: ReturnModelType<typeof KittenClass>, species: string) {
-    //     return this.find({ species }).exec();
-    // }
 }
   
 export const FeeEvent = getModelForClass(FeeEventSchema);
+export type IFeeEvent = FeeEventSchema;

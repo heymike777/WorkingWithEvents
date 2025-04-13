@@ -13,6 +13,7 @@ import { MigrationManager } from './services/managers/MigrationManager';
 import minimist from 'minimist';
 import { FeeEventsManager } from './services/managers/FeeEventsManager';
 import { eventsRouter } from './routes/v1/Events';
+import { IFeeBlock } from './entities/FeeBlock';
 
 const corsOptions: CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -64,7 +65,7 @@ const onExpressStarted = async () => {
         }
 
         // Load blocks from the database or on-chain if not found
-        const blocks = await FeeEventsManager.loadBlocks(polygon.chainId, fromBlock, toBlock);
+        const blocks: IFeeBlock[] = await FeeEventsManager.loadBlocks(polygon.chainId, fromBlock, toBlock);
         console.log('Blocks:', blocks);
     }
 
