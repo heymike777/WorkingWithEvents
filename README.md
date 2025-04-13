@@ -28,3 +28,8 @@ API to fetch events
 ```bash
     http://localhost:3000/api/v1/events?integrator={integrator}&page=1&pageSize=20
 ```
+
+Tests
+```bash
+  npm run test
+```
